@@ -28,15 +28,18 @@ jobs:
           node-version: '18'
 
       - name: Install dependencies
+        working-directory: ./FlashLiveSportsAPI
         run: npm install
 
       - name: Fetch live games
+        working-directory: ./FlashLiveSportsAPI
         run: npm run fetch-live-games
         env:
           RAPIDAPI_KEY: ${{ secrets.RAPIDAPI_KEY }}
           GH_PAT:      ${{ secrets.GH_PAT }}
 
       - name: Commit and push updates
+        working-directory: ./FlashLiveSportsAPI
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
