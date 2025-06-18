@@ -9,21 +9,29 @@ jobs:
   fetch:
     runs-on: ubuntu-latest
     env:
-      RAPIDAPI_KEY: ${{ secrets.RAPIDAPI_KEY }}
+      RAPIDAPI_KEY: ${{ secrets.RAPIDAPI_KEY }}   # your RapidAPI key in secrets
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+
       - name: Install dependencies
-        run: pip install requests
+        run: pip install -r requirements.txt
+
       - name: Fetch live games
         run: python fetch_live_games.py
+
       - name: Commit and push results
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}   # your Personal Access Token in secrets
         run: |
           git config --global user.name 'github-actions'
           git config --global user.email 'github-actions@github.com'
           git add live_games.json
-          git commit -m "Update live games"
-          git push
+          git commit -m "Update live games" || echo "No changes to commit"
+          git push "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git" HEAD:main
