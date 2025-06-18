@@ -1,9 +1,9 @@
 name: Fetch Live Games
 
 on:
-  workflow_dispatch:
+  workflow_dispatch:    # allows manual runs
   schedule:
-    - cron: '0 5 * * *'  # Once per day at 5:00 UTC
+    - cron: '0 5 * * *'  # runs once per day at 5:00 UTC
 
 jobs:
   fetch:
@@ -12,18 +12,14 @@ jobs:
       RAPIDAPI_KEY: ${{ secrets.RAPIDAPI_KEY }}
     steps:
       - uses: actions/checkout@v4
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-
       - name: Install dependencies
         run: pip install -r requirements.txt
-
       - name: Fetch live games
         run: python fetch_live_games.py
-
       - name: Commit and push results
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
@@ -32,4 +28,5 @@ jobs:
           git config --global user.email 'github-actions@github.com'
           git add live_games.json
           git commit -m "Update live games" || echo "No changes to commit"
+          git pull --rebase "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git" main || true
           git push "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git" HEAD:main
