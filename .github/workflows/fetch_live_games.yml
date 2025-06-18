@@ -21,11 +21,13 @@ jobs:
       - name: Fetch live games
         run: python fetch_live_games.py
       - name: Commit and push results
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
           git config --global user.name 'github-actions'
           git config --global user.email 'github-actions@github.com'
           git add live_games.json
           git commit -m "Update live games" || echo "No changes to commit"
-          git remote set-url origin https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }}
+          git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}
           git pull --rebase origin main || true
           git push origin HEAD:main
