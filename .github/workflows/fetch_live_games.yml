@@ -1,9 +1,9 @@
-name: Fetch FIFA Club World Cup Games
+name: Fetch Live Games
 
 on:
-  workflow_dispatch:         # allow manual run
+  workflow_dispatch:      # Allows manual runs from the Actions tab
   schedule:
-    - cron: '0 5 * * *'      # once per day at 5:00 UTC
+    - cron: '0 5 * * *'   # Runs once per day at 5:00 UTC
 
 jobs:
   fetch:
@@ -19,15 +19,18 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
-        run: pip install requests
+        run: pip install -r requirements.txt
 
       - name: Fetch live games
         run: python fetch_live_games.py
 
       - name: Commit and push results
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
           git config --global user.name 'github-actions'
           git config --global user.email 'github-actions@github.com'
+          git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}
           git add live_games.json
-          git commit -m "Update live games"
+          git commit -m "Update live games" || echo "No changes to commit"
           git push
