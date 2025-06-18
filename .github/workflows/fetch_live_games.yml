@@ -1,19 +1,17 @@
 name: Fetch Live Games
 
 on:
-  workflow_dispatch:    # allows manual runs
+  workflow_dispatch:
   schedule:
-    - cron: '0 5 * * *'  # runs once per day at 5:00 UTC
+    - cron: '0 5 * * *'  # Once per day at 5:00 UTC
 
 jobs:
   fetch:
     runs-on: ubuntu-latest
     env:
-      RAPIDAPI_KEY: ${{ secrets.RAPIDAPI_KEY }}   # your RapidAPI key in secrets
-
+      RAPIDAPI_KEY: ${{ secrets.RAPIDAPI_KEY }}
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -28,7 +26,7 @@ jobs:
 
       - name: Commit and push results
         env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}   # your Personal Access Token in secrets
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
           git config --global user.name 'github-actions'
           git config --global user.email 'github-actions@github.com'
