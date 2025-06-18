@@ -1,9 +1,9 @@
 name: Fetch Live Games
 
 on:
-  workflow_dispatch:    # allows manual runs
+  workflow_dispatch:
   schedule:
-    - cron: '0 5 * * *'  # runs once per day at 5:00 UTC
+    - cron: '0 5 * * *'
 
 jobs:
   fetch:
