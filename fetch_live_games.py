@@ -1,23 +1,31 @@
 import requests
-import datetime
+import json
+from datetime import datetime
 
-RAPIDAPI_KEY = "69ddc401b2msh5094062915b5fe7p10d075jsne1f319ac3519"
-TOURNAMENT_ID = "0bQaeJD7"  # FIFA Club World Cup
+# FlashLive tournament_id for FIFA Club World Cup
+TOURNAMENT_ID = "YoSkIXsp"  # <-- replace if you want a different league
 
-today = datetime.datetime.utcnow().strftime("%Y-%m-%d")
+today = datetime.utcnow().strftime('%Y-%m-%d')
 
 url = "https://flashlive-sports.p.rapidapi.com/v1/events/list"
+headers = {
+    "X-RapidAPI-Key": os.environ["RAPIDAPI_KEY"],
+    "X-RapidAPI-Host": "flashlive-sports.p.rapidapi.com"
+}
 params = {
-    "sport_id": "1",
+    "sport_id": "1",              # Soccer
     "tournament_id": TOURNAMENT_ID,
     "date": today,
     "locale": "en_INT",
-    "page": "1"
-}
-headers = {
-    "X-RapidAPI-Key": RAPIDAPI_KEY,
-    "X-RapidAPI-Host": "flashlive-sports.p.rapidapi.com"
+    "page": 1
 }
 
-response = requests.get(url, headers=headers, params=params)
-print(response.json())
+resp = requests.get(url, headers=headers, params=params)
+if resp.ok:
+    data = resp.json()
+else:
+    print("API ERROR", resp.status_code, resp.text)
+    data = {}
+
+with open("live_games.json", "w", encoding="utf-8") as f:
+    json.dump(data, f, ensure_ascii=False, indent=2)
